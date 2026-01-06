@@ -1,4 +1,4 @@
-import { GoogleGenAI, SchemaType } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
 import { AIProvider, Step } from "./base";
 import { config } from "../config";
 
@@ -31,16 +31,16 @@ export class GeminiProvider implements AIProvider {
         config: {
           responseMimeType: "application/json",
           responseSchema: {
-            type: SchemaType.ARRAY,
+            type: Type.ARRAY,
             items: {
-              type: SchemaType.OBJECT,
+              type: Type.OBJECT,
               properties: {
                 description: {
-                  type: SchemaType.STRING,
+                  type: Type.STRING,
                   description: "The actionable step description.",
                 },
                 duration: {
-                  type: SchemaType.INTEGER,
+                  type: Type.INTEGER,
                   description: "Estimated duration in minutes (5-15).",
                 },
               },
@@ -50,7 +50,7 @@ export class GeminiProvider implements AIProvider {
         },
       });
 
-      const text = response.text();
+      const text = response.text;
       if (!text) throw new Error("No response from AI");
       return JSON.parse(text);
     } catch (error) {
@@ -71,12 +71,12 @@ export class GeminiProvider implements AIProvider {
         config: {
           responseMimeType: "application/json",
           responseSchema: {
-            type: SchemaType.ARRAY,
-            items: { type: SchemaType.STRING }
+            type: Type.ARRAY,
+            items: { type: Type.STRING }
           }
         }
       });
-      const text = response.text();
+      const text = response.text;
       return text ? JSON.parse(text) : [];
     } catch (error) {
       console.error("Gemini Suggest Error:", error);
