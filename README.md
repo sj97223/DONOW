@@ -138,22 +138,3 @@ A: 检查 `.env` 中的 `AI_API_KEY` 是否正确，或额度是否耗尽。
 
 **Q: Nginx 502 Bad Gateway？**
 A: 后端容器可能未启动完成。使用 `docker compose logs server` 查看后端报错。
-
-## GitHub 提交流程
-
-```bash
-# 初始化
-git init
-
-# 添加文件
-git add .
-
-# 提交
-git commit -m "feat: initial commit with docker deployment support"
-
-# 关联远程 (替换 <GITHUB_USERNAME> 和 <REPO_NAME>)
-git remote add origin https://github.com/<GITHUB_USERNAME>/<REPO_NAME>.git
-
-# 推送
-git push -u origin main
-```
