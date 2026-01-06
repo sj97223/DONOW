@@ -1,0 +1,7 @@
+{
+  "name": "DoNow - 立动",
+  "description": "An AI-powered task breakdown tool designed for procrastinators to get things done immediately.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
