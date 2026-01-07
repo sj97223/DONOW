@@ -10,9 +10,9 @@ interface CalendarProps {
   onTaskClick: (task: BigTask) => void;
 }
 
-export const Calendar: React.FC<CalendarProps> = ({ history, onBack, lang, t, onTaskClick }) => {
+export const Calendar: React.FC<CalendarProps> = ({ history, onBack, lang, t, onTaskClick, onResume }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -28,7 +28,14 @@ export const Calendar: React.FC<CalendarProps> = ({ history, onBack, lang, t, on
   };
 
   const getTasksForSelectedDate = () => {
-    if (!selectedDate) return [];
+    // If no date selected, show all tasks (sorted by date)
+    if (!selectedDate) {
+        return [...history].sort((a, b) => {
+            const dateA = getTaskDate(a);
+            const dateB = getTaskDate(b);
+            return dateB.getTime() - dateA.getTime();
+        });
+    }
     return history.filter(task => {
        const d = getTaskDate(task);
        return d.getDate() === selectedDate.getDate() && d.getMonth() === selectedDate.getMonth() && d.getFullYear() === selectedDate.getFullYear();
@@ -80,7 +87,7 @@ export const Calendar: React.FC<CalendarProps> = ({ history, onBack, lang, t, on
 
       <div className="flex-1 overflow-auto">
           <h4 className="text-sm font-bold text-[var(--text-secondary)] uppercase tracking-wide mb-4 flex justify-between items-center">
-            <span>{selectedDate ? selectedDate.toLocaleDateString() : 'Select a date'}</span>
+            <span>{selectedDate ? selectedDate.toLocaleDateString() : 'All Tasks'}</span>
             <span className="text-xs font-normal opacity-60">
                 {getTasksForSelectedDate().length} Tasks
             </span>
@@ -100,7 +107,19 @@ export const Calendar: React.FC<CalendarProps> = ({ history, onBack, lang, t, on
                                     {!isCompleted && <span className="text-red-500 font-bold bg-red-500/10 px-1.5 rounded uppercase text-[10px]">Unfinished</span>}
                                 </div>
                             </div>
-                            {isCompleted ? <CheckCircleIcon className="text-green-500 w-5 h-5" /> : <ClockIcon className="text-red-400 w-5 h-5" />}
+                            {isCompleted ? <CheckCircleIcon className="text-green-500 w-5 h-5" /> : (
+                                <div className="flex items-center gap-2">
+                                    <ClockIcon className="text-red-400 w-5 h-5" />
+                                    {onResume && (
+                                        <button 
+                                            onClick={(e) => { e.stopPropagation(); onResume(task); }}
+                                            className="ml-2 px-3 py-1.5 bg-red-500 text-white text-xs font-bold rounded-lg shadow-sm hover:bg-red-600 active:scale-95 transition"
+                                        >
+                                            {t[lang].continue || 'Resume'}
+                                        </button>
+                                    )}
+                                </div>
+                            )}
                         </div>
                       );
                   })}

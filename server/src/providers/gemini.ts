@@ -23,6 +23,10 @@ export class GeminiProvider implements AIProvider {
     this.client = new GoogleGenAI({ apiKey: config.apiKey });
   }
 
+  private cleanJson(text: string): string {
+    return text.replace(/```json\n?|\n?```/g, '').trim();
+  }
+
   async breakDownTask(taskTitle: string, context?: string, lang: 'en' | 'zh' = 'zh', stepsToKeep?: Step[]): Promise<Step[]> {
     const keptInfo = stepsToKeep && stepsToKeep.length > 0 
       ? (lang === 'zh' ? `\n保留以下步骤（请将其整合进计划中）：${JSON.stringify(stepsToKeep)}` : `\nKeep these steps (integrate them into the plan): ${JSON.stringify(stepsToKeep)}`)
@@ -42,6 +46,7 @@ export class GeminiProvider implements AIProvider {
         2. 每个描述必须以动词开头。
         3. 必须使用中文回复。
         4. 确保生成至少 5 个步骤。
+        5. 只返回纯 JSON 数组，不要包含 Markdown 标记。
       `
       : `You are a productivity expert. 
         Break down the task into at least 5 to 10 actionable steps.
@@ -56,6 +61,7 @@ export class GeminiProvider implements AIProvider {
         2. Start each description with a verb.
         3. Response must be in English.
         4. Ensure at least 5 steps are generated.
+        5. Return ONLY a raw JSON array, no Markdown formatting.
       `;
 
     try {
@@ -86,7 +92,7 @@ export class GeminiProvider implements AIProvider {
 
       const text = response.text;
       if (!text) throw new Error("No response from AI");
-      return JSON.parse(text);
+      return JSON.parse(this.cleanJson(text));
     } catch (error) {
       console.error("Gemini Provider Error:", error);
       throw error;
@@ -95,8 +101,8 @@ export class GeminiProvider implements AIProvider {
 
   async suggestNextSteps(taskTitle: string, lang: 'en' | 'zh'): Promise<string[]> {
     const prompt = lang === 'zh' 
-      ? `用户刚刚完成了任务："${taskTitle}"。请给出 3 到 5 个后续的建议或下一步计划。保持简短，每条建议一行。`
-      : `The user just finished the task: "${taskTitle}". Suggest 3 to 5 relevant next steps or proposals. Keep them short, one per line.`;
+      ? `用户刚刚完成了任务："${taskTitle}"。请给出 3 到 5 个后续的建议或下一步计划。保持简短，每条建议一行。只返回纯 JSON 字符串数组。`
+      : `The user just finished the task: "${taskTitle}". Suggest 3 to 5 relevant next steps or proposals. Keep them short, one per line. Return ONLY a raw JSON string array.`;
 
     try {
       const response = await retry(() => this.client.models.generateContent({
@@ -111,7 +117,7 @@ export class GeminiProvider implements AIProvider {
         }
       }));
       const text = response.text;
-      return text ? JSON.parse(text) : [];
+      return text ? JSON.parse(this.cleanJson(text)) : [];
     } catch (error) {
       console.error("Gemini Suggest Error:", error);
       return [];

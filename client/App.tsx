@@ -19,13 +19,13 @@ const TRANSLATIONS = {
     subtitle: "Stop thinking. Start moving.",
     placeholder: "e.g. Write my thesis paper...",
     thinking: "Thinking...",
-    breakdown: "AI Breakdown",
+    breakdown: "MiMo Breakdown",
     history: "My Tasks",
     steps: "steps",
     completed: "completed",
     noHistory: "No tasks yet.",
     reviewPlan: "Review the plan.",
-    reviewPlanDesc: "AI has broken it down. Adjust if needed.",
+    reviewPlanDesc: "MiMo has broken it down. Adjust if needed.",
     addStep: "Add Step",
     startDoing: "Start Doing",
     inProgress: "In Progress",
@@ -52,7 +52,7 @@ const TRANSLATIONS = {
     estTime: "Estimated Time",
     proposals: "Next Steps Proposals",
     generatingProposals: "Generating next steps...",
-    regenerate: "Regenerate with AI",
+    regenerate: "Regenerate with MiMo",
     regenerateFeedback: "Add instructions (e.g. 'more focus on coding')",
     save: "Save",
     cancel: "Cancel",
@@ -74,13 +74,13 @@ const TRANSLATIONS = {
     subtitle: "拒绝拖延，立刻行动。",
     placeholder: "例如：写毕业论文、准备演讲...",
     thinking: "思考中...",
-    breakdown: "AI 拆解",
+    breakdown: "MiMo 拆解",
     history: "我的任务",
     steps: "步",
     completed: "已完成",
     noHistory: "暂无任务。",
     reviewPlan: "预览计划",
-    reviewPlanDesc: "AI 已将其拆解为小任务。如有需要可调整。",
+    reviewPlanDesc: "MiMo 已将其拆解为小任务。如有需要可调整。",
     addStep: "添加步骤",
     startDoing: "开始执行",
     inProgress: "进行中",
@@ -107,7 +107,7 @@ const TRANSLATIONS = {
     estTime: "预计耗时",
     proposals: "后续建议",
     generatingProposals: "正在生成后续建议...",
-    regenerate: "重新 AI 生成",
+    regenerate: "重新 MiMo 生成",
     regenerateFeedback: "输入提示词 (例如：'增加代码实现细节')",
     save: "保存",
     cancel: "取消",
@@ -478,12 +478,16 @@ const App: React.FC = () => {
                         {apiStatus === 'verified' ? 'VERIFIED' : apiStatus === 'missing' ? 'MISSING' : 'CHECKING'}
                     </div>
                     {apiStatus === 'verified' && (
-                        <span className="text-[10px] font-mono text-[var(--text-secondary)] opacity-70 scale-90 origin-right">
+                        <span className="text-[10px] font-mono text-[var(--text-secondary)] opacity-70 scale-90 origin-right uppercase">
                             {apiInfo.model || 'Unknown'}
                         </span>
                     )}
                 </div>
                 <div className="flex bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg p-1 h-fit">
+                    <button onClick={() => setView('calendar')} className="px-2 py-1 text-xs rounded-md font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors flex items-center gap-1">
+                        <CalendarIcon className="w-3 h-3" />
+                    </button>
+                    <div className="w-px bg-[var(--bg-secondary)] mx-1"></div>
                     <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="px-2 py-1 text-xs rounded-md font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
                         {theme === 'dark' ? '☀' : '🌙'}
                     </button>
@@ -584,6 +588,9 @@ const App: React.FC = () => {
                     })}
                 </div>
             )}
+        </div>
+        <div className="fixed bottom-2 right-4 text-[10px] text-[var(--text-secondary)] opacity-50 pointer-events-none">
+            v0.0.1
         </div>
     </div>
   );
@@ -813,7 +820,7 @@ const App: React.FC = () => {
   if (view === 'executor') return renderExecutor();
   if (view === 'success') return renderSuccess();
   if (view === 'history') return renderHistoryDetail();
-  if (view === 'calendar') return <Calendar history={history} onBack={() => setView('home')} lang={lang} t={t} onTaskClick={(task) => { setHistoryDetail(task); setView('history'); }} />;
+  if (view === 'calendar') return <Calendar history={history} onBack={() => setView('home')} lang={lang} t={t} onTaskClick={(task) => { setHistoryDetail(task); setView('history'); }} onResume={resumeTask} />;
   if (view === 'focus' && currentTask && activeStepId) {
     const step = currentTask.subTasks.find(s => s.id === activeStepId);
     if (step) return <FocusTimer task={step} onComplete={completeFocusStep} onBack={() => setView('executor')} lang={lang} t={t} volume={volume} muted={muted} />;

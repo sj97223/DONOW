@@ -3,6 +3,7 @@ import { config } from '../config';
 import { GeminiProvider } from '../providers/gemini';
 import { OpenAIProvider } from '../providers/openai';
 import { AnthropicProvider } from '../providers/anthropic';
+import { MimoProvider } from '../providers/mimo';
 import { AIProvider } from '../providers/base';
 
 const router = express.Router();
@@ -28,6 +29,9 @@ const getProvider = (): AIProvider => {
       break;
     case 'anthropic':
       provider = new AnthropicProvider();
+      break;
+    case 'mimo':
+      provider = new MimoProvider();
       break;
     case 'gemini':
     default:

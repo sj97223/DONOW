@@ -6,7 +6,7 @@ import fs from 'fs';
 dotenv.config();
 
 interface AIConfig {
-  provider: 'gemini' | 'openai' | 'anthropic';
+  provider: 'gemini' | 'openai' | 'anthropic' | 'mimo';
   apiKey: string;
   model: string;
 }
@@ -41,9 +41,9 @@ const loadConfig = (): AIConfig => {
 
   console.warn('WARNING: AI Configuration missing. AI_API_KEY environment variable is not set.');
   return {
-    provider: 'gemini',
+    provider: 'mimo',
     apiKey: '',
-    model: 'gemini-1.5-flash',
+    model: 'mimo-v2-flash',
   };
 };
 
