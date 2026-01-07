@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    ports:
+      - "5901:80"
+    depends_on:
+      - server
+    networks:
+      - donow-network
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    environment:
+      - PORT=3000
+      - AI_PROVIDER=${AI_PROVIDER:-mimo}
+      - AI_API_KEY=${AI_API_KEY}
+      - MODEL_NAME=${MODEL_NAME:-mimo-v2-flash}
+    networks:
+      - donow-network
+
+networks:
+  donow-network:
+    driver: bridge
