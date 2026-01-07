@@ -9,10 +9,12 @@ export class OpenAIProvider implements AIProvider {
     this.client = new OpenAI({ apiKey: config.apiKey });
   }
 
-  async breakDownTask(taskTitle: string, context?: string): Promise<Step[]> {
+  async breakDownTask(taskTitle: string, context?: string, lang: 'en' | 'zh' = 'zh', stepsToKeep?: Step[]): Promise<Step[]> {
+    const langInst = lang === 'zh' ? "Please respond in Simplified Chinese." : "Please respond in English.";
     const prompt = `You are a productivity expert. Break down the task into 5-10 actionable steps (5-15 mins each).
     Task: "${taskTitle}"
     ${context ? `Context: "${context}"` : ""}
+    ${langInst}
     Return JSON format: [{"description": string, "duration": number}]`;
 
     try {

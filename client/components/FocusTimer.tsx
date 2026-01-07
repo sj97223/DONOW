@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { SubTask, Language } from '../types';
 import { CheckCircleIcon } from './Icons';
+import { playSound } from '../services/soundService';
 
 interface FocusTimerProps {
   task: SubTask;
@@ -9,9 +10,11 @@ interface FocusTimerProps {
   onBack: () => void;
   lang: Language;
   t: any;
+  volume: number;
+  muted: boolean;
 }
 
-export const FocusTimer: React.FC<FocusTimerProps> = ({ task, onComplete, onBack, lang, t }) => {
+export const FocusTimer: React.FC<FocusTimerProps> = ({ task, onComplete, onBack, lang, t, volume, muted }) => {
   const initialTime = task.duration * 60;
   const [timeLeft, setTimeLeft] = useState(initialTime);
   const [isActive, setIsActive] = useState(true);
@@ -43,6 +46,13 @@ export const FocusTimer: React.FC<FocusTimerProps> = ({ task, onComplete, onBack
   };
 
   useEffect(() => {
+    if (!muted) playSound('start', volume);
+    return () => {
+      // Cleanup if needed
+    };
+  }, []);
+
+  useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
 
     if (isActive && timeLeft > 0) {
@@ -56,6 +66,7 @@ export const FocusTimer: React.FC<FocusTimerProps> = ({ task, onComplete, onBack
             voicedHalfway.current = true;
           }
           if (next === 60 && !voicedOneMin.current) {
+            if (!muted) playSound('warning', volume);
             speak(lang === 'zh' ? "还剩最后一分钟！" : "One minute remaining!");
             voicedOneMin.current = true;
           }
@@ -72,6 +83,7 @@ export const FocusTimer: React.FC<FocusTimerProps> = ({ task, onComplete, onBack
   }, [isActive, timeLeft]);
 
   const handleComplete = () => {
+    if (!muted) playSound('end', volume);
     setIsActive(false);
     triggerConfetti();
     setTimeout(() => {

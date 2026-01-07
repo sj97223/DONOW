@@ -4,6 +4,6 @@ export interface Step {
 }
 
 export interface AIProvider {
-  breakDownTask(taskTitle: string, context?: string): Promise<Step[]>;
+  breakDownTask(taskTitle: string, context?: string, lang?: 'en' | 'zh', stepsToKeep?: Step[]): Promise<Step[]>;
   suggestNextSteps?(taskTitle: string, lang: 'en' | 'zh'): Promise<string[]>;
 }

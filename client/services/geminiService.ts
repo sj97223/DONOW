@@ -4,7 +4,7 @@ import { SubTask } from "../types";
 // In Docker, Nginx will handle the routing /api -> backend:3000
 const API_BASE = '/api/ai';
 
-export const checkApiStatus = async (): Promise<{ status: 'verified' | 'missing', provider?: string }> => {
+export const checkApiStatus = async (): Promise<{ status: 'verified' | 'missing', provider?: string, model?: string }> => {
   try {
     const res = await fetch(`${API_BASE}/status`);
     if (!res.ok) throw new Error('Status check failed');
@@ -15,7 +15,7 @@ export const checkApiStatus = async (): Promise<{ status: 'verified' | 'missing'
   }
 };
 
-export const breakDownTask = async (taskDescription: string, feedback?: string, stepsToKeep?: SubTask[]): Promise<Omit<SubTask, 'id' | 'isCompleted'>[]> => {
+export const breakDownTask = async (taskDescription: string, lang: 'en' | 'zh', feedback?: string, stepsToKeep?: SubTask[]): Promise<Omit<SubTask, 'id' | 'isCompleted'>[]> => {
   try {
     const response = await fetch(`${API_BASE}/breakdown`, {
       method: 'POST',
@@ -24,7 +24,9 @@ export const breakDownTask = async (taskDescription: string, feedback?: string, 
       },
       body: JSON.stringify({
         taskTitle: taskDescription,
-        context: feedback ? `User feedback: ${feedback}` : undefined
+        lang,
+        context: feedback ? `User feedback: ${feedback}` : undefined,
+        stepsToKeep: stepsToKeep ? stepsToKeep.map(s => ({ description: s.description, duration: s.duration })) : undefined
       }),
     });
 

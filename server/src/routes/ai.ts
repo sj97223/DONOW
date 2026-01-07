@@ -39,14 +39,14 @@ const getProvider = (): AIProvider => {
 
 router.post('/breakdown', async (req, res) => {
   try {
-    const { taskTitle, context } = req.body;
+    const { taskTitle, context, lang, stepsToKeep } = req.body;
     
     if (!taskTitle) {
       return res.status(400).json({ error: 'Task title is required' });
     }
 
     const ai = getProvider();
-    const steps = await ai.breakDownTask(taskTitle, context);
+    const steps = await ai.breakDownTask(taskTitle, context, lang || 'zh', stepsToKeep);
     
     res.json(steps);
   } catch (error: any) {
