@@ -18,9 +18,9 @@ services:
       dockerfile: Dockerfile.server
     environment:
       - PORT=3000
-      - AI_PROVIDER=mimo
-      - AI_API_KEY=sk-c6um6575e7vucqniuagezu08ntue6x5ee5s2ta7wmpopqkrq
-      - MODEL_NAME=mimo-v2-flash
+      - AI_PROVIDER=${AI_PROVIDER:-mimo}
+      - AI_API_KEY=${AI_API_KEY}
+      - MODEL_NAME=${MODEL_NAME:-mimo-v2-flash}
     networks:
       - donow-network
 
