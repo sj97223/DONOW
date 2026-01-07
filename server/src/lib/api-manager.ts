@@ -89,6 +89,11 @@ export class APIManager {
         this.checkRateLimit();
         this.incrementRequest();
 
+        // Rotate Mimo key on every request for uniform distribution (Load Balancing)
+        if (provider === 'mimo') {
+            this.rotateMimoKey();
+        }
+
         let attempt = 0;
         const maxRetries = 3;
         

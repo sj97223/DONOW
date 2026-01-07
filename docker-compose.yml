@@ -20,6 +20,11 @@ services:
       - PORT=3000
       - AI_PROVIDER=${AI_PROVIDER:-mimo}
       - AI_API_KEY=${AI_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_MODEL=${GEMINI_MODEL}
+      - MIMO_API_KEY_1=${MIMO_API_KEY_1}
+      - MIMO_API_KEY_2=${MIMO_API_KEY_2}
+      - MIMO_API_KEY_3=${MIMO_API_KEY_3}
       - MODEL_NAME=${MODEL_NAME:-mimo-v2-flash}
     networks:
       - donow-network

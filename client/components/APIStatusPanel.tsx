@@ -163,34 +163,34 @@ export const APIStatusPanel: React.FC = () => {
                         </div>
 
                         {/* Performance Stats */}
-                        <div className="border-t border-gray-100 dark:border-gray-700 pt-3">
-                            <div className="text-[10px] uppercase text-gray-400 font-bold mb-2 flex justify-between">
-                                <span>Performance</span>
-                                <span>Success / Fail / Retry</span>
-                            </div>
-                            <div className="grid grid-cols-2 gap-2 text-xs">
-                                <div className="flex justify-between items-center bg-gray-50 dark:bg-gray-900 px-2 py-1.5 rounded">
-                                    <span className="font-bold text-gray-600 dark:text-gray-400">MIMO</span>
-                                    <div className="font-mono space-x-2">
-                                        <span className="text-green-600">{stats.stats.mimo.success}</span>
-                                        <span className="text-gray-300">|</span>
-                                        <span className="text-red-500">{stats.stats.mimo.failed}</span>
-                                        <span className="text-gray-300">|</span>
-                                        <span className="text-yellow-500">{stats.stats.mimo.retries}</span>
+                            <div className="border-t border-gray-100 dark:border-gray-700 pt-3">
+                                <div className="text-[10px] uppercase text-gray-400 font-bold mb-2 flex justify-between">
+                                    <span>Performance</span>
+                                    <span>Success / Fail / Retry</span>
+                                </div>
+                                <div className="grid grid-cols-2 gap-2 text-xs">
+                                    <div className="flex flex-col gap-1 bg-gray-50 dark:bg-gray-900 p-2 rounded h-full justify-center">
+                                        <span className="font-bold text-gray-600 dark:text-gray-400 text-[10px] uppercase tracking-wider">MIMO</span>
+                                        <div className="flex justify-between font-mono text-xs w-full">
+                                            <span className="text-green-600 font-bold">{stats.stats.mimo.success}</span>
+                                            <span className="text-gray-300">|</span>
+                                            <span className="text-red-500 font-bold">{stats.stats.mimo.failed}</span>
+                                            <span className="text-gray-300">|</span>
+                                            <span className="text-yellow-500 font-bold">{stats.stats.mimo.retries}</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col gap-1 bg-gray-50 dark:bg-gray-900 p-2 rounded h-full justify-center">
+                                        <span className="font-bold text-gray-600 dark:text-gray-400 text-[10px] uppercase tracking-wider">GEMINI</span>
+                                        <div className="flex justify-between font-mono text-xs w-full">
+                                            <span className="text-green-600 font-bold">{stats.stats.gemini.success}</span>
+                                            <span className="text-gray-300">|</span>
+                                            <span className="text-red-500 font-bold">{stats.stats.gemini.failed}</span>
+                                            <span className="text-gray-300">|</span>
+                                            <span className="text-yellow-500 font-bold">{stats.stats.gemini.retries}</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="flex justify-between items-center bg-gray-50 dark:bg-gray-900 px-2 py-1.5 rounded">
-                                    <span className="font-bold text-gray-600 dark:text-gray-400">GEMINI</span>
-                                    <div className="font-mono space-x-2">
-                                        <span className="text-green-600">{stats.stats.gemini.success}</span>
-                                        <span className="text-gray-300">|</span>
-                                        <span className="text-red-500">{stats.stats.gemini.failed}</span>
-                                        <span className="text-gray-300">|</span>
-                                        <span className="text-yellow-500">{stats.stats.gemini.retries}</span>
-                                    </div>
-                                </div>
                             </div>
-                        </div>
                     </div>
                 )}
             </div>

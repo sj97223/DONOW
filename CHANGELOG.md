@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.0.3] - 2026-01-07
+
+### Changed
+- **API Rotation**: Upgraded MiMo key rotation strategy from failover-only to **Load Balancing** (Uniform Distribution). Keys now rotate on every request to evenly distribute load.
+- **UI Improvements**: Refactored `APIStatusPanel` performance stats grid for better alignment and readability. Updated version display to dynamic package version.
+
 ## [0.0.2] - 2026-01-07
 
 ### Added
