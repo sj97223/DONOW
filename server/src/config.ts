@@ -39,7 +39,12 @@ const loadConfig = (): AIConfig => {
     }
   }
 
-  throw new Error('AI Configuration missing. Please set AI_API_KEY environment variable.');
+  console.warn('WARNING: AI Configuration missing. AI_API_KEY environment variable is not set.');
+  return {
+    provider: 'gemini',
+    apiKey: '',
+    model: 'gemini-1.5-flash',
+  };
 };
 
 export const config = loadConfig();

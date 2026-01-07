@@ -7,6 +7,15 @@ import { AIProvider } from '../providers/base';
 
 const router = express.Router();
 
+router.get('/status', (req, res) => {
+  const hasKey = !!config.apiKey && config.apiKey.length > 0;
+  res.json({
+    status: hasKey ? 'verified' : 'missing',
+    provider: config.provider,
+    model: config.model
+  });
+});
+
 let provider: AIProvider;
 
 // Lazy initialization or switch based on config

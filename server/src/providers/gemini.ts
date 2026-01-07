@@ -2,6 +2,20 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { AIProvider, Step } from "./base";
 import { config } from "../config";
 
+const retry = async <T>(fn: () => Promise<T>, retries = 2, delay = 1000): Promise<T> => {
+  try {
+    return await fn();
+  } catch (error: any) {
+    if (retries <= 0) throw error;
+    // Don't retry on auth errors
+    if (error.message?.includes('401') || error.status === 401 || error.message?.includes('API key')) throw error;
+    
+    console.warn(`[Gemini] Request failed, retrying... (${retries} left). Error: ${error.message}`);
+    await new Promise(resolve => setTimeout(resolve, delay));
+    return retry(fn, retries - 1, delay * 2);
+  }
+};
+
 export class GeminiProvider implements AIProvider {
   private client: GoogleGenAI;
 
@@ -25,7 +39,7 @@ export class GeminiProvider implements AIProvider {
     `;
 
     try {
-      const response = await this.client.models.generateContent({
+      const response = await retry(() => this.client.models.generateContent({
         model: config.model,
         contents: prompt,
         config: {
@@ -48,7 +62,7 @@ export class GeminiProvider implements AIProvider {
             },
           },
         },
-      });
+      }));
 
       const text = response.text;
       if (!text) throw new Error("No response from AI");
@@ -65,7 +79,7 @@ export class GeminiProvider implements AIProvider {
       : `The user just finished the task: "${taskTitle}". Suggest 3 to 5 relevant next steps or proposals. Keep them short, one per line.`;
 
     try {
-      const response = await this.client.models.generateContent({
+      const response = await retry(() => this.client.models.generateContent({
         model: config.model,
         contents: prompt,
         config: {
@@ -75,7 +89,7 @@ export class GeminiProvider implements AIProvider {
             items: { type: Type.STRING }
           }
         }
-      });
+      }));
       const text = response.text;
       return text ? JSON.parse(text) : [];
     } catch (error) {

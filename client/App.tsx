@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { breakDownTask, getNextSteps } from './services/geminiService';
+import { breakDownTask, getNextSteps, checkApiStatus } from './services/geminiService';
 import { saveCurrentTask, loadCurrentTask, saveToHistory, loadHistory, removeFromHistory } from './services/storageService';
 import { BigTask, SubTask, AppView, IWindow, Language } from './types';
 import { 
@@ -249,6 +249,7 @@ const App: React.FC = () => {
   const [activeStepId, setActiveStepId] = useState<string | null>(null);
   const [lang, setLang] = useState<Language>('zh');
   const [proposals, setProposals] = useState<string[]>([]);
+  const [apiStatus, setApiStatus] = useState<'verified' | 'missing' | 'checking'>('checking');
   
   // Selection and Modals
   const [selectedSteps, setSelectedSteps] = useState<Set<string>>(new Set());
@@ -279,6 +280,7 @@ const App: React.FC = () => {
       else if (saved.status === 'active') setView('executor');
     }
     setHistory(loadHistory());
+    checkApiStatus().then(s => setApiStatus(s.status));
   }, []);
 
   // Sync current task changes to both current storage and history (for persistence)
@@ -322,7 +324,10 @@ const App: React.FC = () => {
       setCurrentTask(newTask);
       saveToHistory(newTask); // Save immediately
       setView('planner');
-    } catch (e) { alert("Failed"); } finally { setIsProcessing(false); }
+    } catch (e: any) { 
+      console.error(e);
+      alert(t[lang].title + " Error: " + (e.message || "Failed to generate steps")); 
+    } finally { setIsProcessing(false); }
   };
 
   const handleRegenerate = async () => {
@@ -338,7 +343,10 @@ const App: React.FC = () => {
       });
       setSelectedSteps(new Set());
       setRegenFeedback('');
-    } catch (e) { alert("Failed"); } finally { setIsProcessing(false); }
+    } catch (e: any) { 
+      console.error(e);
+      alert(t[lang].title + " Error: " + (e.message || "Failed to regenerate")); 
+    } finally { setIsProcessing(false); }
   };
 
   const handleDeleteTask = (taskId: string, e: React.MouseEvent) => {
@@ -426,9 +434,21 @@ const App: React.FC = () => {
                 <h1 className="text-4xl font-extrabold text-white mb-2 tracking-tight">{t[lang].title}</h1>
                 <p className="text-zinc-500">{t[lang].subtitle}</p>
             </div>
-            <div className="flex bg-zinc-900 rounded-lg p-1 h-fit">
-                <button onClick={() => setLang('en')} className={`px-2 py-1 text-xs rounded-md font-bold transition-colors ${lang === 'en' ? 'bg-zinc-700 text-white' : 'text-zinc-500'}`}>EN</button>
-                <button onClick={() => setLang('zh')} className={`px-2 py-1 text-xs rounded-md font-bold transition-colors ${lang === 'zh' ? 'bg-zinc-700 text-white' : 'text-zinc-500'}`}>中</button>
+            <div className="flex gap-3 items-start">
+                <div className={`px-3 py-1 text-xs rounded-full font-bold flex items-center gap-2 border h-fit mt-1 transition-colors ${
+                    apiStatus === 'verified' ? 'bg-green-500/10 border-green-500/20 text-green-400' :
+                    apiStatus === 'missing' ? 'bg-red-500/10 border-red-500/20 text-red-400' : 'bg-zinc-800 text-zinc-500'
+                }`}>
+                    <div className={`w-2 h-2 rounded-full ${
+                        apiStatus === 'verified' ? 'bg-green-500 animate-pulse' : 
+                        apiStatus === 'missing' ? 'bg-red-500' : 'bg-zinc-500'
+                    }`}></div>
+                    {apiStatus === 'verified' ? 'Verified' : apiStatus === 'missing' ? 'Key Missing' : 'Checking...'}
+                </div>
+                <div className="flex bg-zinc-900 rounded-lg p-1 h-fit">
+                    <button onClick={() => setLang('en')} className={`px-2 py-1 text-xs rounded-md font-bold transition-colors ${lang === 'en' ? 'bg-zinc-700 text-white' : 'text-zinc-500'}`}>EN</button>
+                    <button onClick={() => setLang('zh')} className={`px-2 py-1 text-xs rounded-md font-bold transition-colors ${lang === 'zh' ? 'bg-zinc-700 text-white' : 'text-zinc-500'}`}>中</button>
+                </div>
             </div>
         </header>
 

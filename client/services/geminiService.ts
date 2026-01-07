@@ -4,6 +4,17 @@ import { SubTask } from "../types";
 // In Docker, Nginx will handle the routing /api -> backend:3000
 const API_BASE = '/api/ai';
 
+export const checkApiStatus = async (): Promise<{ status: 'verified' | 'missing', provider?: string }> => {
+  try {
+    const res = await fetch(`${API_BASE}/status`);
+    if (!res.ok) throw new Error('Status check failed');
+    return await res.json();
+  } catch (e) {
+    console.warn("API Status check failed", e);
+    return { status: 'missing' };
+  }
+};
+
 export const breakDownTask = async (taskDescription: string, feedback?: string, stepsToKeep?: SubTask[]): Promise<Omit<SubTask, 'id' | 'isCompleted'>[]> => {
   try {
     const response = await fetch(`${API_BASE}/breakdown`, {
@@ -18,7 +29,8 @@ export const breakDownTask = async (taskDescription: string, feedback?: string, 
     });
 
     if (!response.ok) {
-      throw new Error(`API Error: ${response.status}`);
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `API Error: ${response.status}`);
     }
 
     const data = await response.json();
@@ -26,14 +38,7 @@ export const breakDownTask = async (taskDescription: string, feedback?: string, 
 
   } catch (error) {
     console.error("AI breakdown error:", error);
-    // Fallback
-    return [
-      { description: "准备工作环境 (Prepare environment)", duration: 5 },
-      { description: "明确任务的核心目标 (Define core goals)", duration: 10 },
-      { description: "拆解第一个具体子任务 (Detail first sub-task)", duration: 10 },
-      { description: "执行核心开发/写作内容 (Execute core content)", duration: 15 },
-      { description: "初步检查与回顾 (Initial review)", duration: 5 },
-    ];
+    throw error;
   }
 };
 
