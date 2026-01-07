@@ -155,7 +155,7 @@ const TaskItem = ({
         ${task.isCompleted 
           ? 'bg-[var(--bg-secondary)] border-[var(--border-color)] opacity-40' 
           : isPlanning
-             ? `bg-[var(--bg-secondary)] border-[var(--border-color)] hover:border-zinc-700 ${isSelected ? 'ring-2 ring-accent-yellow' : ''}`
+             ? `bg-[var(--bg-secondary)] border-[var(--border-color)] hover:border-[var(--border-color)] ${isSelected ? 'ring-2 ring-accent-yellow' : ''}`
              : 'bg-accent-purple border-accent-purple shadow-lg shadow-purple-900/20 transform scale-[1.02]' 
         }
         ${!task.isCompleted && !isPlanning ? 'cursor-pointer' : ''}
@@ -167,7 +167,7 @@ const TaskItem = ({
              <button 
                 onClick={(e) => { e.stopPropagation(); onSelect(); }}
                 className={`flex items-center justify-center w-6 h-6 rounded-full border transition-colors
-                   ${isSelected ? 'bg-accent-yellow border-accent-yellow text-black' : 'bg-zinc-800 border-zinc-700 text-[var(--text-secondary)]'}
+                   ${isSelected ? 'bg-accent-yellow border-accent-yellow text-black' : 'bg-[var(--bg-secondary)] border-[var(--border-color)] text-[var(--text-secondary)]'}
                 `}
              >
                {isSelected ? <CheckCircleIcon className="w-4 h-4" /> : <span className="text-xs">{index + 1}</span>}
@@ -210,14 +210,14 @@ const TaskItem = ({
             <button 
               onClick={(e) => { e.stopPropagation(); onMoveUp(); }} 
               disabled={index === 0}
-              className="p-1 hover:bg-zinc-800 rounded text-[var(--text-secondary)] disabled:opacity-20"
+              className="p-1 hover:bg-[var(--bg-secondary)] rounded text-[var(--text-secondary)] disabled:opacity-20"
             >
               <ArrowUpIcon className="w-4 h-4" />
             </button>
             <button 
               onClick={(e) => { e.stopPropagation(); onMoveDown(); }}
               disabled={index === total - 1}
-              className="p-1 hover:bg-zinc-800 rounded text-[var(--text-secondary)] disabled:opacity-20"
+              className="p-1 hover:bg-[var(--bg-secondary)] rounded text-[var(--text-secondary)] disabled:opacity-20"
             >
               <ArrowDownIcon className="w-4 h-4" />
             </button>
@@ -227,7 +227,7 @@ const TaskItem = ({
         {isPlanning && (
           <button 
             onClick={(e) => { e.stopPropagation(); onDelete(); }}
-            className="self-center p-2 text-zinc-600 hover:text-red-400 hover:bg-zinc-800 rounded-lg ml-1 transition-colors"
+            className="self-center p-2 text-[var(--text-secondary)] hover:text-red-400 hover:bg-[var(--bg-secondary)] rounded-lg ml-1 transition-colors"
           >
             <TrashIcon className="w-4 h-4" />
           </button>
@@ -466,25 +466,32 @@ const App: React.FC = () => {
                 <p className="text-[var(--text-secondary)]">{t[lang].subtitle}</p>
             </div>
             <div className="flex gap-3 items-start">
-                <div className={`px-3 py-1 text-xs rounded-full font-bold flex items-center gap-2 border h-fit mt-1 transition-colors ${
-                    apiStatus === 'verified' ? 'bg-green-500/10 border-green-500/20 text-green-400' :
-                    apiStatus === 'missing' ? 'bg-red-500/10 border-red-500/20 text-red-400' : 'bg-zinc-800 text-[var(--text-secondary)]'
-                }`}>
-                    <div className={`w-2 h-2 rounded-full ${
-                        apiStatus === 'verified' ? 'bg-green-500 animate-pulse' : 
-                        apiStatus === 'missing' ? 'bg-red-500' : 'bg-zinc-500'
-                    }`}></div>
-                    {apiStatus === 'verified' ? `Verified with ${apiInfo.model || 'AI'}` : apiStatus === 'missing' ? 'Key Missing' : 'Checking...'}
+                <div className="flex flex-col items-end gap-1">
+                    <div className={`px-2 py-1 text-xs rounded-md font-bold flex items-center gap-1.5 border transition-colors ${
+                        apiStatus === 'verified' ? 'bg-green-500/10 border-green-500/20 text-green-500' :
+                        apiStatus === 'missing' ? 'bg-red-500/10 border-red-500/20 text-red-500' : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)]'
+                    }`}>
+                        <div className={`w-1.5 h-1.5 rounded-full ${
+                            apiStatus === 'verified' ? 'bg-green-500 animate-pulse' : 
+                            apiStatus === 'missing' ? 'bg-red-500' : 'bg-zinc-500'
+                        }`}></div>
+                        {apiStatus === 'verified' ? 'VERIFIED' : apiStatus === 'missing' ? 'MISSING' : 'CHECKING'}
+                    </div>
+                    {apiStatus === 'verified' && (
+                        <span className="text-[10px] font-mono text-[var(--text-secondary)] opacity-70 scale-90 origin-right">
+                            {apiInfo.model || 'Unknown'}
+                        </span>
+                    )}
                 </div>
-                <div className="flex bg-[var(--bg-secondary)] rounded-lg p-1 h-fit">
+                <div className="flex bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg p-1 h-fit">
                     <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="px-2 py-1 text-xs rounded-md font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
                         {theme === 'dark' ? '☀' : '🌙'}
                     </button>
-                    <div className="w-px bg-zinc-800 mx-1"></div>
+                    <div className="w-px bg-[var(--bg-secondary)] mx-1"></div>
                     <button onClick={() => setMuted(!muted)} className="px-2 py-1 text-xs rounded-md font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
                         {muted ? '🔇' : '🔊'}
                     </button>
-                    <div className="w-px bg-zinc-800 mx-1"></div>
+                    <div className="w-px bg-[var(--bg-secondary)] mx-1"></div>
                     <button onClick={() => setLang('en')} className={`px-2 py-1 text-xs rounded-md font-bold transition-colors ${lang === 'en' ? 'bg-zinc-700 text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>EN</button>
                     <button onClick={() => setLang('zh')} className={`px-2 py-1 text-xs rounded-md font-bold transition-colors ${lang === 'zh' ? 'bg-zinc-700 text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>中</button>
                 </div>
@@ -495,7 +502,7 @@ const App: React.FC = () => {
             <div className="absolute top-0 right-0 w-32 h-32 bg-accent-yellow opacity-5 blur-2xl rounded-full pointer-events-none"></div>
             <div className="relative mb-4">
                 <textarea
-                    className="w-full p-4 pr-12 rounded-2xl bg-[var(--bg-primary)] border border-[var(--border-color)] focus:ring-1 focus:ring-accent-yellow focus:border-accent-yellow outline-none resize-none text-[var(--text-primary)] placeholder:text-zinc-600 transition-all"
+                    className="w-full p-4 pr-12 rounded-2xl bg-[var(--bg-primary)] border border-[var(--border-color)] focus:ring-1 focus:ring-accent-yellow focus:border-accent-yellow outline-none resize-none text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] transition-all"
                     rows={3}
                     placeholder={t[lang].placeholder}
                     value={inputText}
@@ -507,7 +514,7 @@ const App: React.FC = () => {
                 onClick={handleCreateTask}
                 disabled={!inputText.trim() || isProcessing}
                 className={`w-full py-4 rounded-2xl font-bold text-black shadow-lg flex items-center justify-center gap-2 transition-all transform active:scale-95
-                    ${isProcessing ? 'bg-zinc-700 cursor-not-allowed text-zinc-400' : 'bg-accent-yellow hover:bg-yellow-300'}
+                    ${isProcessing ? 'bg-zinc-700 cursor-not-allowed text-[var(--text-secondary)]' : 'bg-accent-yellow hover:bg-yellow-300'}
                 `}
             >
                 {isProcessing ? <span>{t[lang].thinking}</span> : <><SparklesIcon className="w-5 h-5" /><span>{t[lang].breakdown}</span></>}
@@ -516,23 +523,28 @@ const App: React.FC = () => {
 
         <div className="flex-1 overflow-auto">
             <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-zinc-300 tracking-wide text-sm uppercase">{t[lang].history}</h3>
-                <button onClick={() => setView('calendar')} className="text-xs font-medium text-zinc-400 hover:text-accent-yellow flex items-center gap-1"><CalendarIcon className="w-4 h-4" />{t[lang].calendar}</button>
+                <h3 className="font-bold text-[var(--text-primary)] tracking-wide text-sm uppercase">{t[lang].history}</h3>
+                <button onClick={() => setView('calendar')} className="text-xs font-medium text-[var(--text-secondary)] hover:text-accent-yellow flex items-center gap-1"><CalendarIcon className="w-4 h-4" />{t[lang].calendar}</button>
             </div>
             {history.length === 0 ? (
-                <div className="text-center text-zinc-700 py-12"><HistoryIcon className="w-12 h-12 mx-auto mb-3 opacity-20" /><p className="text-sm">{t[lang].noHistory}</p></div>
+                <div className="text-center text-[var(--text-secondary)] py-12"><HistoryIcon className="w-12 h-12 mx-auto mb-3 opacity-20" /><p className="text-sm">{t[lang].noHistory}</p></div>
             ) : (
                 <div className="space-y-3 pb-8">
-                    {history.map(task => {
+                    {[...history].sort((a, b) => {
+                        if (a.status !== 'completed' && b.status === 'completed') return -1;
+                        if (a.status === 'completed' && b.status !== 'completed') return 1;
+                        if (a.status === 'completed') return (b.completedAt || 0) - (a.completedAt || 0);
+                        return b.createdAt - a.createdAt;
+                    }).map(task => {
                         const isCompleted = task.status === 'completed';
                         return (
                             <div 
                                 key={task.id} 
                                 onClick={() => isCompleted ? (setHistoryDetail(task), setView('history')) : resumeTask(task)} 
-                                className={`p-4 rounded-2xl border flex items-center justify-between cursor-pointer transition relative overflow-hidden group
+                                className={`p-4 rounded-2xl border flex items-center justify-between cursor-pointer transition relative overflow-hidden group bg-[var(--bg-secondary)]
                                     ${isCompleted 
-                                        ? 'bg-[var(--bg-secondary)] border-[var(--border-color)] hover:border-zinc-700' 
-                                        : 'bg-[var(--bg-secondary)] border-red-500/50 hover:border-red-400 shadow-sm shadow-red-900/10'
+                                        ? 'border-[var(--border-color)] hover:border-[var(--text-secondary)]' 
+                                        : 'border-red-500/50 hover:border-red-400 shadow-sm shadow-red-900/10'
                                     }`}
                             >
                                 { /* Unfinished Indicator Background */ }
@@ -542,11 +554,11 @@ const App: React.FC = () => {
                                 
                                 <div className="flex-1 min-w-0 ml-2">
                                     <div className="flex items-center gap-2 mb-1">
-                                        <span className={`truncate font-medium group-hover:text-[var(--text-primary)] ${isCompleted ? 'text-zinc-300' : 'text-[var(--text-primary)]'}`}>{task.title}</span>
-                                        {!isCompleted && <span className="text-[10px] bg-red-900/40 text-red-400 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">{t[lang].unfinishedAlert}</span>}
+                                        <span className={`truncate font-medium group-hover:text-[var(--text-primary)] ${isCompleted ? 'text-[var(--text-secondary)]' : 'text-[var(--text-primary)]'}`}>{task.title}</span>
+                                        {!isCompleted && <span className="text-[10px] bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">{t[lang].unfinishedAlert}</span>}
                                     </div>
                                     <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
-                                        <span className="flex items-center gap-1"><CheckCircleIcon className={`w-3 h-3 ${isCompleted ? 'text-green-500' : 'text-zinc-600'}`} />{task.subTasks.filter(s => s.isCompleted).length}/{task.subTasks.length}</span>
+                                        <span className="flex items-center gap-1"><CheckCircleIcon className={`w-3 h-3 ${isCompleted ? 'text-green-500' : 'text-[var(--text-secondary)]'}`} />{task.subTasks.filter(s => s.isCompleted).length}/{task.subTasks.length}</span>
                                         <span>•</span>
                                         <span>{new Date(task.createdAt).toLocaleDateString()}</span>
                                     </div>
@@ -554,12 +566,18 @@ const App: React.FC = () => {
                                 
                                 <div className="flex items-center gap-2">
                                     {isCompleted ? (
-                                        <ChevronLeftIcon className="w-5 h-5 text-zinc-600 rotate-180" />
+                                        <ChevronLeftIcon className="w-5 h-5 text-[var(--text-secondary)] rotate-180" />
                                     ) : (
-                                        <div className="p-2 bg-red-500/10 rounded-full text-red-400 group-hover:bg-red-500 group-hover:text-[var(--text-primary)] transition">
+                                        <div className="p-2 bg-red-500/10 rounded-full text-red-500 group-hover:bg-red-500 group-hover:text-white transition">
                                             <PlayIcon className="w-4 h-4" />
                                         </div>
                                     )}
+                                    <button 
+                                        onClick={(e) => handleDeleteTask(task.id, e)}
+                                        className="p-2 text-[var(--text-secondary)] hover:text-red-500 hover:bg-[var(--bg-primary)] rounded-full transition opacity-0 group-hover:opacity-100"
+                                    >
+                                        <TrashIcon className="w-4 h-4" />
+                                    </button>
                                 </div>
                             </div>
                         );
@@ -617,7 +635,7 @@ const App: React.FC = () => {
             <div className="space-y-4">
                 <div><label className="text-xs text-[var(--text-secondary)] mb-1 block uppercase">{t[lang].description}</label><input autoFocus id="stepDesc" defaultValue={editingStep?.description || ''} className="w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl p-3 text-[var(--text-primary)] focus:border-accent-yellow outline-none" /></div>
                 <div><label className="text-xs text-[var(--text-secondary)] mb-1 block uppercase">{t[lang].duration}</label><input id="stepDur" type="number" defaultValue={editingStep?.duration || 10} className="w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl p-3 text-[var(--text-primary)] focus:border-accent-yellow outline-none" /></div>
-                <div className="flex gap-3"><button onClick={() => setIsEditModalOpen(false)} className="flex-1 py-3 text-zinc-400 font-bold">{t[lang].cancel}</button>
+                <div className="flex gap-3"><button onClick={() => setIsEditModalOpen(false)} className="flex-1 py-3 text-[var(--text-secondary)] font-bold">{t[lang].cancel}</button>
                 <button onClick={() => {
                     const desc = (document.getElementById('stepDesc') as HTMLInputElement).value;
                     const dur = parseInt((document.getElementById('stepDur') as HTMLInputElement).value) || 10;
@@ -628,7 +646,7 @@ const App: React.FC = () => {
 
         <Modal isOpen={isRegenModalOpen} onClose={() => setIsRegenModalOpen(false)} title={t[lang].regenerate}>
             <div className="space-y-4">
-                <p className="text-xs text-zinc-400 font-bold uppercase tracking-wider">{t[lang].selectToKeep}</p>
+                <p className="text-xs text-[var(--text-secondary)] font-bold uppercase tracking-wider">{t[lang].selectToKeep}</p>
                 
                 <div className="max-h-[200px] overflow-y-auto space-y-2 pr-1 custom-scrollbar">
                     {currentTask.subTasks.map((step, index) => (
@@ -640,8 +658,8 @@ const App: React.FC = () => {
                              }}
                              className={`flex items-center p-3 rounded-xl border cursor-pointer transition-all
                                 ${selectedSteps.has(step.id) 
-                                    ? 'bg-zinc-800 border-accent-yellow/50' 
-                                    : 'bg-[var(--bg-primary)] border-[var(--border-color)] hover:border-zinc-700'}
+                                    ? 'bg-[var(--bg-secondary)] border-accent-yellow/50' 
+                                    : 'bg-[var(--bg-primary)] border-[var(--border-color)] hover:border-[var(--border-color)]'}
                              `}
                         >
                             <div className={`w-5 h-5 rounded flex items-center justify-center border mr-3 transition-colors
@@ -649,12 +667,12 @@ const App: React.FC = () => {
                             `}>
                                 {selectedSteps.has(step.id) && <CheckCircleIcon className="w-3 h-3" />}
                             </div>
-                            <span className={`text-sm ${selectedSteps.has(step.id) ? 'text-[var(--text-primary)]' : 'text-zinc-400'}`}>{step.description}</span>
+                            <span className={`text-sm ${selectedSteps.has(step.id) ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>{step.description}</span>
                         </div>
                     ))}
                 </div>
 
-                <div className="h-px bg-zinc-800 my-2"></div>
+                <div className="h-px bg-[var(--bg-secondary)] my-2"></div>
 
                 <textarea 
                     placeholder={t[lang].regenerateFeedback} value={regenFeedback} onChange={(e) => setRegenFeedback(e.target.value)}
@@ -668,9 +686,9 @@ const App: React.FC = () => {
 
         <Modal isOpen={isAbandonModalOpen} onClose={() => setIsAbandonModalOpen(false)} title={t[lang].abandonTitle}>
             <div className="space-y-6">
-                <p className="text-zinc-400 text-sm leading-relaxed">{t[lang].abandonMessage}</p>
+                <p className="text-[var(--text-secondary)] text-sm leading-relaxed">{t[lang].abandonMessage}</p>
                 <div className="flex gap-3">
-                    <button onClick={() => setIsAbandonModalOpen(false)} className="flex-1 py-3 bg-zinc-800 text-[var(--text-primary)] rounded-xl font-bold">{t[lang].cancel}</button>
+                    <button onClick={() => setIsAbandonModalOpen(false)} className="flex-1 py-3 bg-[var(--bg-secondary)] text-[var(--text-primary)] rounded-xl font-bold">{t[lang].cancel}</button>
                     <button onClick={() => {
                         if (currentTask) {
                             removeFromHistory(currentTask.id);
@@ -725,7 +743,7 @@ const App: React.FC = () => {
   };
 
   const renderSuccess = () => (
-    <div className="flex flex-col h-full max-w-md mx-auto p-6 bg-[var(--bg-primary)] overflow-y-auto">
+    <div className="flex flex-col h-full max-w-md mx-auto p-6 bg-[var(--bg-primary)] overflow-y-auto transition-colors duration-300">
         <div className="flex flex-col items-center text-center mt-8">
             <div className="w-24 h-24 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-full flex items-center justify-center mb-8 animate-bounce"><SparklesIcon className="w-10 h-10 text-accent-yellow" /></div>
             <h2 className="text-3xl font-extrabold text-[var(--text-primary)] mb-3">{t[lang].taskComplete}</h2>
@@ -735,18 +753,18 @@ const App: React.FC = () => {
                 <div className="text-center"><p className="text-xs text-[var(--text-secondary)] uppercase mb-1">{t[lang].actualTime}</p><p className={`text-2xl font-bold text-green-400`}>{getTotalTime(currentTask, 'act')}m</p></div>
             </div>
             <div className="w-full text-left mb-8">
-                 <h3 className="text-sm font-bold text-zinc-400 uppercase mb-4">{t[lang].proposals}</h3>
+                 <h3 className="text-sm font-bold text-[var(--text-secondary)] uppercase mb-4">{t[lang].proposals}</h3>
                  {proposals.length === 0 ? <div className="p-4 rounded-xl bg-[var(--bg-secondary)]/50 border border-[var(--border-color)] text-[var(--text-secondary)] text-sm animate-pulse">{t[lang].generatingProposals}</div> : (
                     <ul className="space-y-3">
                         {proposals.map((prop, idx) => (
-                            <li key={idx} onClick={() => { setInputText(prop); setView('home'); }} className="p-4 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border-color)] text-zinc-300 text-sm flex gap-3 items-center cursor-pointer hover:border-accent-purple transition active:scale-95 group">
+                            <li key={idx} onClick={() => { setInputText(prop); setView('home'); }} className="p-4 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-secondary)] text-sm flex gap-3 items-center cursor-pointer hover:border-accent-purple transition active:scale-95 group">
                                 <span className="w-1.5 h-1.5 rounded-full bg-accent-purple group-hover:scale-150 transition-transform"></span>{prop}
                             </li>
                         ))}
                     </ul>
                  )}
             </div>
-            <button onClick={handleFinishTask} className="w-full py-4 rounded-2xl bg-white text-black font-bold shadow-lg hover:bg-zinc-200 transition transform active:scale-95 mb-8">{t[lang].backHome}</button>
+            <button onClick={handleFinishTask} className="w-full py-4 rounded-2xl bg-[var(--text-primary)] text-[var(--bg-primary)] font-bold shadow-lg hover:opacity-90 transition transform active:scale-95 mb-8">{t[lang].backHome}</button>
         </div>
     </div>
   );
@@ -756,7 +774,7 @@ const App: React.FC = () => {
     return (
         <div className="flex flex-col h-full max-w-md mx-auto bg-[var(--bg-primary)]">
             <div className="p-4 border-b border-zinc-900 flex items-center gap-4">
-                <button onClick={() => { setHistoryDetail(null); setView('home'); }} className="p-2 text-zinc-400 hover:text-[var(--text-primary)] bg-[var(--bg-secondary)] rounded-full"><ChevronLeftIcon /></button>
+                <button onClick={() => { setHistoryDetail(null); setView('home'); }} className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] bg-[var(--bg-secondary)] rounded-full"><ChevronLeftIcon /></button>
                 <h2 className="font-bold text-[var(--text-primary)]">{t[lang].taskDetails}</h2>
             </div>
             <div className="p-6 overflow-y-auto flex-1">
@@ -779,10 +797,10 @@ const App: React.FC = () => {
                     <div className="bg-[var(--bg-secondary)] p-4 rounded-xl"><span className="text-xs text-[var(--text-secondary)] block">{t[lang].actualTime}</span><span className="text-xl font-bold text-green-400">{getTotalTime(historyDetail, 'act')}m</span></div>
                 </div>
                 <div className="space-y-6">
-                    <h3 className="text-xs font-bold text-zinc-600 uppercase tracking-widest">{t[lang].completedSteps}</h3>
+                    <h3 className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-widest">{t[lang].completedSteps}</h3>
                     <ul className="space-y-6 relative border-l border-[var(--border-color)] ml-2 pl-6">
                         {historyDetail.subTasks.map((step, i) => (
-                            <li key={i} className="relative"><div className="absolute -left-[29px] top-1 bg-[var(--bg-secondary)] w-4 h-4 rounded-full border border-zinc-700"></div><p className="text-zinc-300 font-medium mb-1">{step.description}</p><p className="text-xs text-zinc-600">Est: {step.duration}m • Act: {Math.round((step.actualDuration || 0) / 60)}m</p></li>
+                            <li key={i} className="relative"><div className="absolute -left-[29px] top-1 bg-[var(--bg-secondary)] w-4 h-4 rounded-full border border-[var(--border-color)]"></div><p className="text-[var(--text-primary)] font-medium mb-1">{step.description}</p><p className="text-xs text-[var(--text-secondary)]">Est: {step.duration}m • Act: {Math.round((step.actualDuration || 0) / 60)}m</p></li>
                         ))}
                     </ul>
                 </div>
