@@ -31,7 +31,33 @@ README.md        # 说明文档
 - **Server**: Node.js Express 服务，持有 API Key，处理 AI 请求，监听容器端口 3000。
 - **Proxy**: Nginx 将 `/api` 请求转发至 Server，对外暴露宿主机端口 `5901`。
 
-## 快速开始
+## API Configuration Guide
+
+### 1. Environment Variables
+Create a `.env` file in the `server` directory or use `config.json` in the root.
+
+**Required Variables:**
+- `MIMO_API_KEY_1`: Primary API key for MiMo service
+- `MIMO_API_KEY_2`: Backup key 1
+- `MIMO_API_KEY_3`: Backup key 2
+- `GEMINI_API_KEY`: Google Gemini API key
+- `GEMINI_MODEL`: Model name (default: `gemini-2.5-flash-lite`)
+
+### 2. Configuration File (Alternative)
+Copy `config.example.json` to `config.json` in the root directory and fill in your keys.
+
+```json
+{
+  "provider": "mimo",
+  "mimoKeys": ["sk-...", "sk-..."],
+  "geminiKey": "AIza...",
+  "geminiModel": "gemini-2.5-flash-lite"
+}
+```
+
+> **Security Note**: Never commit `config.json` or `.env` files to version control. They are already added to `.gitignore`.
+
+## Getting Started
 
 ### 1. 准备配置
 

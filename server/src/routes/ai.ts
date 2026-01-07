@@ -5,8 +5,17 @@ import { OpenAIProvider } from '../providers/openai';
 import { AnthropicProvider } from '../providers/anthropic';
 import { MimoProvider } from '../providers/mimo';
 import { AIProvider } from '../providers/base';
+import { apiManager } from '../lib/api-manager';
 
 const router = express.Router();
+
+router.get('/stats', (req, res) => {
+  res.json({
+    ...apiManager.getStatus(),
+    provider: config.provider,
+    model: config.provider === 'mimo' ? config.model : config.geminiModel
+  });
+});
 
 router.get('/status', (req, res) => {
   const hasKey = !!config.apiKey && config.apiKey.length > 0;

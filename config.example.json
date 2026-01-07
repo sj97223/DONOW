@@ -1,0 +1,9 @@
+{
+  "provider": "mimo",
+  "mimoKeys": [
+    "sk-your-mimo-key-1",
+    "sk-your-mimo-key-2"
+  ],
+  "geminiKey": "AIzaSy...",
+  "geminiModel": "gemini-2.5-flash-lite"
+}

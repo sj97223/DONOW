@@ -6,8 +6,9 @@ export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
     return {
       server: {
-        port: 5173,
+        port: 5901,
         host: '0.0.0.0',
+        allowedHosts: ['donow.bitzh.edu.kg'],
         proxy: {
           '/api': {
             target: 'http://localhost:3000',
@@ -27,6 +28,7 @@ export default defineConfig(({ mode }) => {
       resolve: {
         alias: {
           '@': path.resolve(__dirname, '.'),
+          'package.json': path.resolve(__dirname, 'package.json'),
         }
       }
     };

@@ -1,6 +1,6 @@
 {
   "name": "donow-server",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "Backend proxy for DoNow AI features",
   "main": "dist/index.js",
   "scripts": {

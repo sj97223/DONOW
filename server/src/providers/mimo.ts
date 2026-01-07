@@ -1,16 +1,10 @@
 import OpenAI from 'openai';
 import { AIProvider, Step } from './base';
 import { config } from '../config';
+import { apiManager } from '../lib/api-manager';
 
 export class MimoProvider implements AIProvider {
-  private client: OpenAI;
-
-  constructor() {
-    this.client = new OpenAI({
-      apiKey: config.apiKey,
-      baseURL: 'https://api.xiaomimimo.com/v1',
-    });
-  }
+  constructor() {}
 
   async breakDownTask(taskTitle: string, context?: string, lang: 'en' | 'zh' = 'zh', stepsToKeep?: Step[]): Promise<Step[]> {
     const keptInfo = stepsToKeep && stepsToKeep.length > 0 
@@ -51,8 +45,13 @@ export class MimoProvider implements AIProvider {
         [{"description": "Step description", "duration": 10}, ...]
       `;
 
-    try {
-      const completion = await this.client.chat.completions.create({
+    return apiManager.executeWithRetry('mimo', async (apiKey) => {
+      const client = new OpenAI({
+        apiKey: apiKey,
+        baseURL: 'https://api.xiaomimimo.com/v1',
+      });
+
+      const completion = await client.chat.completions.create({
         model: config.model,
         messages: [
           { role: 'system', content: 'You are a helpful assistant that outputs JSON.' },
@@ -71,10 +70,7 @@ export class MimoProvider implements AIProvider {
         console.error("MiMo Breakdown Parse Error. Raw content:", content);
         throw new Error("Failed to parse AI response: " + parseError);
       }
-    } catch (error) {
-      console.error("MiMo Provider Error:", error);
-      throw error;
-    }
+    });
   }
 
   async suggestNextSteps(taskTitle: string, lang: 'en' | 'zh'): Promise<string[]> {
@@ -83,25 +79,32 @@ export class MimoProvider implements AIProvider {
       : `The user just finished the task: "${taskTitle}". Suggest 3 to 5 relevant next steps or proposals. Keep them short, one per line. Return ONLY a raw JSON string array, no Markdown.`;
 
     try {
-      const completion = await this.client.chat.completions.create({
-        model: config.model,
-        messages: [
-            { role: 'system', content: 'You are a helpful assistant that outputs JSON.' },
-            { role: 'user', content: prompt }
-        ],
-        temperature: 0.3,
-      });
+      return await apiManager.executeWithRetry('mimo', async (apiKey) => {
+        const client = new OpenAI({
+            apiKey: apiKey,
+            baseURL: 'https://api.xiaomimimo.com/v1',
+        });
 
-      const content = completion.choices[0].message.content;
-      if (!content) return [];
-      
-      const cleaned = content.replace(/```json\n?|\n?```/g, '').trim();
-      try {
-        return JSON.parse(cleaned);
-      } catch (parseError) {
-        console.error("MiMo Suggest Parse Error. Raw content:", content);
-        return [];
-      }
+        const completion = await client.chat.completions.create({
+          model: config.model,
+          messages: [
+              { role: 'system', content: 'You are a helpful assistant that outputs JSON.' },
+              { role: 'user', content: prompt }
+          ],
+          temperature: 0.3,
+        });
+
+        const content = completion.choices[0].message.content;
+        if (!content) return [];
+        
+        const cleaned = content.replace(/```json\n?|\n?```/g, '').trim();
+        try {
+          return JSON.parse(cleaned);
+        } catch (parseError) {
+          console.error("MiMo Suggest Parse Error. Raw content:", content);
+          return [];
+        }
+      });
     } catch (error) {
       console.error("MiMo Suggest Error:", error);
       return [];

@@ -10,6 +10,7 @@ import {
 } from './components/Icons';
 import { FocusTimer } from './components/FocusTimer';
 import { Calendar } from './components/Calendar';
+import { APIStatusPanel } from './components/APIStatusPanel';
 
 // --- Translations ---
 
@@ -265,12 +266,14 @@ const App: React.FC = () => {
       root.style.setProperty('--border-color', '#27272a');
       root.style.setProperty('--text-primary', '#ffffff');
       root.style.setProperty('--text-secondary', '#71717a');
+      root.style.setProperty('--bg-bottom-bar', '#121212');
     } else {
-      root.style.setProperty('--bg-primary', '#f9fafb');
+      root.style.setProperty('--bg-primary', '#f5f5f5');
       root.style.setProperty('--bg-secondary', '#ffffff');
       root.style.setProperty('--border-color', '#e5e7eb');
       root.style.setProperty('--text-primary', '#111827');
       root.style.setProperty('--text-secondary', '#6b7280');
+      root.style.setProperty('--bg-bottom-bar', '#f5f5f5');
     }
   }, [theme]);
 
@@ -459,81 +462,71 @@ const App: React.FC = () => {
 
   // Views
   const renderHome = () => (
-    <div className="flex flex-col h-full max-w-md mx-auto p-6 pt-8 bg-[var(--bg-primary)]">
+    <div className="flex flex-col h-full max-w-md mx-auto p-6 pt-8 bg-[var(--bg-primary)] 2xl:max-w-2xl 2xl:p-12 transition-all duration-300">
         <header className="mb-8 flex justify-between items-start">
             <div>
-                <h1 className="text-4xl font-extrabold text-[var(--text-primary)] mb-2 tracking-tight">{t[lang].title}</h1>
-                <p className="text-[var(--text-secondary)]">{t[lang].subtitle}</p>
+                <h1 className="text-4xl font-extrabold text-[var(--text-primary)] mb-2 tracking-tight 2xl:text-6xl">{t[lang].title}</h1>
+                <p className="text-[var(--text-secondary)] 2xl:text-xl">{t[lang].subtitle}</p>
             </div>
             <div className="flex gap-3 items-start">
                 <div className="flex flex-col items-end gap-1">
-                    <div className={`px-2 py-1 text-xs rounded-md font-bold flex items-center gap-1.5 border transition-colors ${
-                        apiStatus === 'verified' ? 'bg-green-500/10 border-green-500/20 text-green-500' :
-                        apiStatus === 'missing' ? 'bg-red-500/10 border-red-500/20 text-red-500' : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)]'
-                    }`}>
-                        <div className={`w-1.5 h-1.5 rounded-full ${
-                            apiStatus === 'verified' ? 'bg-green-500 animate-pulse' : 
-                            apiStatus === 'missing' ? 'bg-red-500' : 'bg-zinc-500'
-                        }`}></div>
-                        {apiStatus === 'verified' ? 'VERIFIED' : apiStatus === 'missing' ? 'MISSING' : 'CHECKING'}
-                    </div>
-                    {apiStatus === 'verified' && (
-                        <span className="text-[10px] font-mono text-[var(--text-secondary)] opacity-70 scale-90 origin-right uppercase">
-                            {apiInfo.model || 'Unknown'}
-                        </span>
-                    )}
+                    {/* Replaced offline div with consistent button style or unified panel logic */}
+                    {/* The APIStatusPanel component now handles the detailed status. 
+                        We keep a minimal indicator here if needed, or rely on the panel.
+                        Per user request Scheme B: we remove the old offline div logic or replace it.
+                        Here we just keep the controls and let the bottom panel handle status. */}
                 </div>
-                <div className="flex bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg p-1 h-fit">
-                    <button onClick={() => setView('calendar')} className="px-2 py-1 text-xs rounded-md font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors flex items-center gap-1">
-                        <CalendarIcon className="w-3 h-3" />
+                <div className="flex bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg p-1 h-fit 2xl:p-2">
+                    <button onClick={() => setView('calendar')} className="px-2 py-1 text-xs rounded-md font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors flex items-center gap-1 2xl:text-base 2xl:px-4 2xl:py-2">
+                        <CalendarIcon className="w-3 h-3 2xl:w-5 2xl:h-5" />
                     </button>
                     <div className="w-px bg-[var(--bg-secondary)] mx-1"></div>
-                    <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="px-2 py-1 text-xs rounded-md font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
+                    <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="px-2 py-1 text-xs rounded-md font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors 2xl:text-base 2xl:px-4 2xl:py-2">
                         {theme === 'dark' ? '☀' : '🌙'}
                     </button>
                     <div className="w-px bg-[var(--bg-secondary)] mx-1"></div>
-                    <button onClick={() => setMuted(!muted)} className="px-2 py-1 text-xs rounded-md font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
+                    <button onClick={() => setMuted(!muted)} className="px-2 py-1 text-xs rounded-md font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors 2xl:text-base 2xl:px-4 2xl:py-2">
                         {muted ? '🔇' : '🔊'}
                     </button>
                     <div className="w-px bg-[var(--bg-secondary)] mx-1"></div>
-                    <button onClick={() => setLang('en')} className={`px-2 py-1 text-xs rounded-md font-bold transition-colors ${lang === 'en' ? 'bg-zinc-700 text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>EN</button>
-                    <button onClick={() => setLang('zh')} className={`px-2 py-1 text-xs rounded-md font-bold transition-colors ${lang === 'zh' ? 'bg-zinc-700 text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>中</button>
+                    <button onClick={() => setLang('en')} className={`px-2 py-1 text-xs rounded-md font-bold transition-colors 2xl:text-base 2xl:px-4 2xl:py-2 ${lang === 'en' ? 'bg-zinc-700 text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>EN</button>
+                    <button onClick={() => setLang('zh')} className={`px-2 py-1 text-xs rounded-md font-bold transition-colors 2xl:text-base 2xl:px-4 2xl:py-2 ${lang === 'zh' ? 'bg-zinc-700 text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>中</button>
                 </div>
             </div>
         </header>
 
-        <div className="bg-[var(--bg-secondary)] rounded-3xl p-6 border border-[var(--border-color)] mb-8 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-accent-yellow opacity-5 blur-2xl rounded-full pointer-events-none"></div>
+        <div className="bg-[var(--bg-secondary)] rounded-3xl p-6 border border-[var(--border-color)] mb-8 relative overflow-hidden group 2xl:p-10">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-accent-yellow opacity-5 blur-2xl rounded-full pointer-events-none 2xl:w-64 2xl:h-64"></div>
             <div className="relative mb-4">
                 <textarea
-                    className="w-full p-4 pr-12 rounded-2xl bg-[var(--bg-primary)] border border-[var(--border-color)] focus:ring-1 focus:ring-accent-yellow focus:border-accent-yellow outline-none resize-none text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] transition-all"
+                    className="w-full p-4 pr-12 rounded-2xl bg-[var(--bg-primary)] border border-[var(--border-color)] focus:ring-1 focus:ring-accent-yellow focus:border-accent-yellow outline-none resize-none text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] transition-all 2xl:text-xl 2xl:p-6"
                     rows={3}
                     placeholder={t[lang].placeholder}
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
                 />
-                <button onClick={startListening} className="absolute bottom-3 right-3 p-2 text-[var(--text-secondary)] hover:text-accent-yellow transition"><MicIcon /></button>
+                <button onClick={startListening} className="absolute bottom-3 right-3 p-2 text-[var(--text-secondary)] hover:text-accent-yellow transition 2xl:bottom-5 2xl:right-5"><MicIcon className="2xl:w-6 2xl:h-6" /></button>
             </div>
             <button
                 onClick={handleCreateTask}
                 disabled={!inputText.trim() || isProcessing}
-                className={`w-full py-4 rounded-2xl font-bold text-black shadow-lg flex items-center justify-center gap-2 transition-all transform active:scale-95
+                className={`w-full py-4 rounded-2xl font-bold text-black shadow-lg flex items-center justify-center gap-2 transition-all transform active:scale-95 2xl:py-6 2xl:text-xl
                     ${isProcessing ? 'bg-zinc-700 cursor-not-allowed text-[var(--text-secondary)]' : 'bg-accent-yellow hover:bg-yellow-300'}
                 `}
             >
-                {isProcessing ? <span>{t[lang].thinking}</span> : <><SparklesIcon className="w-5 h-5" /><span>{t[lang].breakdown}</span></>}
+                {isProcessing ? <span>{t[lang].thinking}</span> : <><SparklesIcon className="w-5 h-5 2xl:w-7 2xl:h-7" /><span>{t[lang].breakdown}</span></>}
             </button>
         </div>
 
         <div className="flex-1 overflow-auto">
             <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-[var(--text-primary)] tracking-wide text-sm uppercase">{t[lang].history}</h3>
-                <button onClick={() => setView('calendar')} className="text-xs font-medium text-[var(--text-secondary)] hover:text-accent-yellow flex items-center gap-1"><CalendarIcon className="w-4 h-4" />{t[lang].calendar}</button>
+                <h3 className="font-bold text-[var(--text-primary)] tracking-wide text-sm uppercase 2xl:text-lg">{t[lang].history}</h3>
+                <button onClick={() => setView('calendar')} className="text-xs font-medium text-[var(--text-secondary)] hover:text-accent-yellow flex items-center gap-1 2xl:text-base"><CalendarIcon className="w-4 h-4 2xl:w-5 2xl:h-5" />{t[lang].calendar}</button>
             </div>
             {history.length === 0 ? (
-                <div className="text-center text-[var(--text-secondary)] py-12"><HistoryIcon className="w-12 h-12 mx-auto mb-3 opacity-20" /><p className="text-sm">{t[lang].noHistory}</p></div>
+                <div className="text-center text-[var(--text-secondary)] py-12"><HistoryIcon className="w-12 h-12 mx-auto mb-3 opacity-20 2xl:w-20 2xl:h-20" /><p className="text-sm 2xl:text-lg">{t[lang].noHistory}</p></div>
             ) : (
-                <div className="space-y-3 pb-8">
+                <div className="space-y-3 pb-8 2xl:space-y-4">
                     {[...history].sort((a, b) => {
                         if (a.status !== 'completed' && b.status === 'completed') return -1;
                         if (a.status === 'completed' && b.status !== 'completed') return 1;
@@ -545,7 +538,7 @@ const App: React.FC = () => {
                             <div 
                                 key={task.id} 
                                 onClick={() => isCompleted ? (setHistoryDetail(task), setView('history')) : resumeTask(task)} 
-                                className={`p-4 rounded-2xl border flex items-center justify-between cursor-pointer transition relative overflow-hidden group bg-[var(--bg-secondary)]
+                                className={`p-4 rounded-2xl border flex items-center justify-between cursor-pointer transition relative overflow-hidden group bg-[var(--bg-secondary)] 2xl:p-6
                                     ${isCompleted 
                                         ? 'border-[var(--border-color)] hover:border-[var(--text-secondary)]' 
                                         : 'border-red-500/50 hover:border-red-400 shadow-sm shadow-red-900/10'
@@ -558,11 +551,11 @@ const App: React.FC = () => {
                                 
                                 <div className="flex-1 min-w-0 ml-2">
                                     <div className="flex items-center gap-2 mb-1">
-                                        <span className={`truncate font-medium group-hover:text-[var(--text-primary)] ${isCompleted ? 'text-[var(--text-secondary)]' : 'text-[var(--text-primary)]'}`}>{task.title}</span>
-                                        {!isCompleted && <span className="text-[10px] bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">{t[lang].unfinishedAlert}</span>}
+                                        <span className={`truncate font-medium group-hover:text-[var(--text-primary)] 2xl:text-lg ${isCompleted ? 'text-[var(--text-secondary)]' : 'text-[var(--text-primary)]'}`}>{task.title}</span>
+                                        {!isCompleted && <span className="text-[10px] bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider 2xl:text-xs">{t[lang].unfinishedAlert}</span>}
                                     </div>
-                                    <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
-                                        <span className="flex items-center gap-1"><CheckCircleIcon className={`w-3 h-3 ${isCompleted ? 'text-green-500' : 'text-[var(--text-secondary)]'}`} />{task.subTasks.filter(s => s.isCompleted).length}/{task.subTasks.length}</span>
+                                    <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)] 2xl:text-sm">
+                                        <span className="flex items-center gap-1"><CheckCircleIcon className={`w-3 h-3 2xl:w-4 2xl:h-4 ${isCompleted ? 'text-green-500' : 'text-[var(--text-secondary)]'}`} />{task.subTasks.filter(s => s.isCompleted).length}/{task.subTasks.length}</span>
                                         <span>•</span>
                                         <span>{new Date(task.createdAt).toLocaleDateString()}</span>
                                     </div>
@@ -570,17 +563,17 @@ const App: React.FC = () => {
                                 
                                 <div className="flex items-center gap-2">
                                     {isCompleted ? (
-                                        <ChevronLeftIcon className="w-5 h-5 text-[var(--text-secondary)] rotate-180" />
+                                        <ChevronLeftIcon className="w-5 h-5 text-[var(--text-secondary)] rotate-180 2xl:w-6 2xl:h-6" />
                                     ) : (
-                                        <div className="p-2 bg-red-500/10 rounded-full text-red-500 group-hover:bg-red-500 group-hover:text-white transition">
-                                            <PlayIcon className="w-4 h-4" />
+                                        <div className="p-2 bg-red-500/10 rounded-full text-red-500 group-hover:bg-red-500 group-hover:text-white transition 2xl:p-3">
+                                            <PlayIcon className="w-4 h-4 2xl:w-5 2xl:h-5" />
                                         </div>
                                     )}
                                     <button 
                                         onClick={(e) => handleDeleteTask(task.id, e)}
-                                        className="p-2 text-[var(--text-secondary)] hover:text-red-500 hover:bg-[var(--bg-primary)] rounded-full transition opacity-0 group-hover:opacity-100"
+                                        className="p-2 text-[var(--text-secondary)] hover:text-red-500 hover:bg-[var(--bg-primary)] rounded-full transition opacity-0 group-hover:opacity-100 2xl:p-3"
                                     >
-                                        <TrashIcon className="w-4 h-4" />
+                                        <TrashIcon className="w-4 h-4 2xl:w-5 2xl:h-5" />
                                     </button>
                                 </div>
                             </div>
@@ -589,8 +582,8 @@ const App: React.FC = () => {
                 </div>
             )}
         </div>
-        <div className="fixed bottom-2 right-4 text-[10px] text-[var(--text-secondary)] opacity-80 pointer-events-none z-50">
-            v0.0.1
+        <div className="fixed bottom-2 right-4 text-[10px] text-[var(--text-secondary)] opacity-80 pointer-events-none z-50 2xl:text-xs">
+            v0.0.2
         </div>
     </div>
   );
@@ -743,7 +736,7 @@ const App: React.FC = () => {
             ))}
         </div>
         {nextStep && (
-            <div className="absolute bottom-8 left-0 right-0 px-6 z-20"><button onClick={() => startFocusMode(nextStep.id)} className="w-full py-4 rounded-2xl font-bold text-black bg-accent-yellow shadow-2xl hover:bg-yellow-300 transition flex items-center justify-between px-6 group active:scale-95"><span className="flex flex-col items-start text-left"><span className="text-[10px] font-bold opacity-60 uppercase tracking-widest mb-0.5">{t[lang].nextStep}</span><span className="text-sm truncate max-w-[200px] leading-tight">{nextStep.description}</span></span><div className="bg-black/10 p-2 rounded-full"><PlayIcon className="w-5 h-5" /></div></button></div>
+            <div className="absolute bottom-8 left-0 right-0 px-6 z-20 bg-[var(--bg-bottom-bar)] pb-8 pt-4"><button onClick={() => startFocusMode(nextStep.id)} className="w-full py-4 rounded-2xl font-bold text-black bg-accent-yellow shadow-2xl hover:bg-yellow-300 transition flex items-center justify-between px-6 group active:scale-95"><span className="flex flex-col items-start text-left"><span className="text-[10px] font-bold opacity-60 uppercase tracking-widest mb-0.5">{t[lang].nextStep}</span><span className="text-sm truncate max-w-[200px] leading-tight">{nextStep.description}</span></span><div className="bg-black/10 p-2 rounded-full"><PlayIcon className="w-5 h-5" /></div></button></div>
         )}
       </div>
     );
@@ -816,16 +809,25 @@ const App: React.FC = () => {
     );
   };
 
-  if (view === 'planner') return renderPlanner();
-  if (view === 'executor') return renderExecutor();
-  if (view === 'success') return renderSuccess();
-  if (view === 'history') return renderHistoryDetail();
-  if (view === 'calendar') return <Calendar history={history} onBack={() => setView('home')} lang={lang} t={t} onTaskClick={(task) => { setHistoryDetail(task); setView('history'); }} onResume={resumeTask} />;
-  if (view === 'focus' && currentTask && activeStepId) {
-    const step = currentTask.subTasks.find(s => s.id === activeStepId);
-    if (step) return <FocusTimer task={step} onComplete={completeFocusStep} onBack={() => setView('executor')} lang={lang} t={t} volume={volume} muted={muted} />;
-  }
-  return renderHome();
+  const renderContent = () => {
+    if (view === 'planner') return renderPlanner();
+    if (view === 'executor') return renderExecutor();
+    if (view === 'success') return renderSuccess();
+    if (view === 'history') return renderHistoryDetail();
+    if (view === 'calendar') return <Calendar history={history} onBack={() => setView('home')} lang={lang} t={t} onTaskClick={(task) => { setHistoryDetail(task); setView('history'); }} onResume={resumeTask} />;
+    if (view === 'focus' && currentTask && activeStepId) {
+      const step = currentTask.subTasks.find(s => s.id === activeStepId);
+      if (step) return <FocusTimer task={step} onComplete={completeFocusStep} onBack={() => setView('executor')} lang={lang} t={t} volume={volume} muted={muted} />;
+    }
+    return renderHome();
+  };
+
+  return (
+    <>
+      {renderContent()}
+      <APIStatusPanel />
+    </>
+  );
 };
 
 export default App;
